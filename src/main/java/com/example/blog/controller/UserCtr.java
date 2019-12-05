@@ -54,17 +54,21 @@ public class UserCtr {
 	public @ResponseBody String login(HttpServletRequest request, User user) {
 		User returnUser = userSvc.selectUsername(user.getUsername());
 		
-		String salt = returnUser.getSalt();
-		String password = SHA256.getEncrypt(user.getPassword(), salt);
-		user.setPassword(password);
-		
-		User loginedUser = userSvc.login(user);
-		
-		if(loginedUser != null) {
-			HttpSession session = request.getSession();
-			session.setAttribute("user", loginedUser);
-						
-			return Script.location("/board/list/1");
+		if(returnUser != null) {
+			String salt = returnUser.getSalt();
+			String password = SHA256.getEncrypt(user.getPassword(), salt);
+			user.setPassword(password);
+			
+			User loginedUser = userSvc.login(user);
+			
+			if(loginedUser != null) {
+				HttpSession session = request.getSession();
+				session.setAttribute("user", loginedUser);
+							
+				return Script.location("/board/list/1");
+			} else {
+				return Script.back("로그인에 실패하였습니다. 다시 시도해 주세요.");
+			}
 		} else {
 			return Script.back("로그인에 실패하였습니다. 다시 시도해 주세요.");
 		}
@@ -77,18 +81,12 @@ public class UserCtr {
 	
 	@PostMapping("/duplicate/{username}")
 	public @ResponseBody String duplicate(@PathVariable String username) {
-		System.out.println("???????????");
 		User user = userSvc.selectUsername(username);
-		
-		System.out.println(user);
-		System.out.println("??????????????????????????");
 		
 		String returnData = null;
 		if (user == null) {
-			System.out.println("?");
 			returnData = "success";
 		} else {
-			System.out.println("!");
 			returnData = "fail";
 		}
 		
@@ -196,25 +194,26 @@ public class UserCtr {
 		
 		try {
 			Files.write(filePath, file.getBytes());
+			
+			User user = new User();
+			user.setId(id);
+			user.setProfile("/upload/" + uuidFileName);
+
+			int result = userSvc.updateProfile(user);
+			
+			if(result > 0) {
+				HttpSession session = request.getSession();
+				User userSession = (User) session.getAttribute("user");
+				
+				userSession.setProfile("/upload/" + uuidFileName);
+				session.setAttribute("user", userSession);
+				
+				return Script.locationWithMsg("프로필 사진 변경이 완료되었습니다.", "/board/list/1");
+			} else {
+				return Script.back("프로필 사진 변경에 실패하였습니다.\\n다시 시도해 주세요.");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
-		
-		User user = new User();
-		user.setId(id);
-		user.setProfile("/upload/" + uuidFileName);
-
-		int result = userSvc.updateProfile(user);
-		
-		if(result > 0) {
-			HttpSession session = request.getSession();
-			User userSession = (User) session.getAttribute("user");
-			
-			userSession.setProfile("/upload/" + uuidFileName);
-			session.setAttribute("user", userSession);
-			
-			return Script.locationWithMsg("프로필 사진 변경이 완료되었습니다.", "/board/list/1");
-		} else {
 			return Script.back("프로필 사진 변경에 실패하였습니다.\\n다시 시도해 주세요.");
 		}
 	}
