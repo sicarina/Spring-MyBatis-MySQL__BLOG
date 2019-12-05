@@ -61,29 +61,5 @@
 						</div>
 					</div>
 				</div>
-				
-				<!-- nav class="navbar navbar-expand-md  navbar-light bg-light">
-					<div class="container">
-						<div class="collapse navbar-collapse" id="navbarMenu">
-							<ul class="navbar-nav mx-auto">
-								<li class="nav-item">
-									<a class="nav-link active" href="/board/list/1">Home(List)</a>
-								</li>
-								<li class="nav-item">
-									&nbsp; &nbsp; &nbsp;
-								</li>
-								<li class="nav-item">
-									<a class="nav-link" href="/guide">Guide</a>
-								</li>
-								<li class="nav-item">
-									&nbsp; &nbsp; &nbsp;
-								</li>
-								<li class="nav-item">
-									<a class="nav-link" href="/board/writeForm">Posting</a>
-								</li>
-							</ul>
-						</div>
-					</div>
-				</nav -->
 			
 			</header>
